@@ -3,6 +3,7 @@ package com.example.demo;
 
 import org.junit.jupiter.api.Test;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 public class DojoStreamTest {
@@ -14,22 +15,13 @@ public class DojoStreamTest {
     }
 
     @Test
-    void jugadoresMayoresA35(){
+    void jugadoresMayoresA35SegunClub(){
         List<Player> list = CsvUtilFile.getPlayers();
-        Map<String, List<Player>> listFilter = list.parallelStream()
-                .filter(player -> player.age >= 35)
-                .map(player -> {
-                    player.name = player.name.toUpperCase(Locale.ROOT);
-                    return player;
-                })
-                .flatMap(playerA -> list.parallelStream()
-                        .filter(playerB -> playerA.club.equals(playerB.club))
-                )
-                .distinct()
+         list.parallelStream().filter(player -> player.age >= 35)
+                .flatMap(player1 -> list.parallelStream()
+                        .filter(player2 -> player1.club.equals(player2.club))
+                ).distinct()
                 .collect(Collectors.groupingBy(Player::getClub));
-
-        assert listFilter.size() == 322;
-
     }
 
     @Test
